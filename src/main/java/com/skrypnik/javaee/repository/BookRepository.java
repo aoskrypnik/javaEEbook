@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
+
 @Repository
 @Slf4j
 public class BookRepository {
@@ -24,7 +26,8 @@ public class BookRepository {
 
 	public Book save(Book book) {
 		log.info("Saving book {}", book.getIsbn());
-		return BOOK_DATABASE.put(book.getIsbn(), book);
+		BOOK_DATABASE.put(book.getIsbn(), book);
+		return book;
 	}
 
 	public Book findByIsbn(String isbn) {
@@ -33,5 +36,13 @@ public class BookRepository {
 
 	public List<Book> findAll() {
 		return new ArrayList<>(BOOK_DATABASE.values());
+	}
+
+	// Here because it can be sql query potentially
+	public List<Book> findByIsbnOrTitleContains(String string) {
+		return BOOK_DATABASE.values()
+				.stream()
+				.filter(book -> book.getIsbn().contains(string) || book.getTitle().contains(string))
+				.collect(toList());
 	}
 }

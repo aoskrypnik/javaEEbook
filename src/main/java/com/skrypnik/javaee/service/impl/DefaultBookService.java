@@ -28,7 +28,9 @@ public class DefaultBookService implements BookService {
 	}
 
 	@Override
-	public List<Book> getAll() {
-		return bookRepository.findAll();
+	public List<Book> get(String searchString) {
+		return searchString == null || searchString.equals("")
+				? bookRepository.findAll()
+				: bookRepository.findByIsbnOrTitleContains(searchString);
 	}
 }

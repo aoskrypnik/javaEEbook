@@ -8,5 +8,5 @@ public interface BookService {
 
 	Book save(Book book);
 
-	List<Book> getAll();
+	List<Book> get(String searchString);
 }
