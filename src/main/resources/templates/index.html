@@ -18,9 +18,9 @@
         let books = $('#books');
         books.empty();
         $.ajax({
-            url: '/api/books',
+            url: '/api/books?size=1000', //hack for fetching all books (assuming that we have < 1000 in db)
             success: function (response) {
-                response.forEach(book => books.append('<tr>' +
+                response.content.forEach(book => books.append('<tr>' +
                     '<td><a href="/books/' + book.isbn + '">' + book.isbn + '</a></td>' +
                     '<td>' + book.title + '</td>' +
                     '<td>' + book.author + '</td>' +
@@ -48,15 +48,14 @@
                 success: function () {
                     let books = $('#books');
                     books.empty();
-                    console.log("HERE")
                     $('#inputIsbn').val('');
                     $('#inputTitle').val('');
                     $('#inputAuthor').val('');
                     $.ajax({
                         type: 'GET',
-                        url: '/api/books',
+                        url: '/api/books?size=1000', //hack for fetching all books (assuming that we have < 1000 in db)
                         success: function (response) {
-                            response.forEach(function (book) {
+                            response.content.forEach(function (book) {
                                 books.append('<tr>' +
                                     '<td><a href="/books/' + book.isbn + '">' + book.isbn + '</a></td>' +
                                     '<td>' + book.title + '</td>' +
@@ -76,9 +75,9 @@
             books.empty();
             $.ajax({
                 type: 'GET',
-                url: '/api/books?searchString=' + $('#searchString').val(),
+                url: '/api/books?size=1000&searchString=' + $('#searchString').val(),
                 success: function (response) {
-                    response.forEach(function (book) {
+                    response.content.forEach(function (book) {
                         books.append('<tr>' +
                             '<td><a href="/books/' + book.isbn + '">' + book.isbn + '</a></td>' +
                             '<td>' + book.title + '</td>' +

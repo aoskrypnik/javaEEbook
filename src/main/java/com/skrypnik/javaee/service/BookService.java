@@ -1,8 +1,8 @@
 package com.skrypnik.javaee.service;
 
 import com.skrypnik.javaee.model.Book;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
@@ -10,5 +10,5 @@ public interface BookService {
 
 	Book getByIsbn(String isbn);
 
-	List<Book> get(String searchString);
+	Page<Book> get(String searchString, Pageable pageable);
 }
