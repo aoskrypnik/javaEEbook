@@ -1,8 +1,12 @@
 package com.skrypnik.javaee.service.impl;
 
+import com.skrypnik.javaee.dto.BookDto;
 import com.skrypnik.javaee.exception.ModelAlreadyExistsException;
+import com.skrypnik.javaee.exception.ModelNotFoundException;
 import com.skrypnik.javaee.model.Book;
+import com.skrypnik.javaee.model.UserEntity;
 import com.skrypnik.javaee.repository.BookRepository;
+import com.skrypnik.javaee.repository.UserRepository;
 import com.skrypnik.javaee.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,8 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +27,11 @@ import static java.util.Objects.nonNull;
 public class DefaultBookService implements BookService {
 
 	private static final String BOOK_ALREADY_EXISTS_MESSAGE = "Book %s already exists";
+	private static final String USER_NOT_FOUND_MESSAGE = "User %s not found";
 	private static final char PERCENT = '%';
 
 	private final BookRepository bookRepository;
+	private final UserRepository userRepository;
 
 	@Override
 	public Book save(Book book) {
@@ -39,14 +47,42 @@ public class DefaultBookService implements BookService {
 	}
 
 	@Override
-	public Page<Book> get(String searchString, Pageable pageable) {
+	public Page<BookDto> search(String searchString, Pageable pageable, String username) {
 		Specification<Book> bookSpecification = (root, criteriaQuery, criteriaBuilder) ->
 				criteriaBuilder.or(
 						criteriaBuilder.like(root.get("isbn"), PERCENT + searchString + PERCENT),
 						criteriaBuilder.like(root.get("title"), PERCENT + searchString + PERCENT),
 						criteriaBuilder.like(root.get("author"), PERCENT + searchString + PERCENT)
 				);
-		return bookRepository.findAll(bookSpecification, pageable);
+		List<String> favouriteBooksIsbns = getUserEntityByUsername(username).getFavouriteBooks().stream()
+				.map(Book::getIsbn)
+				.collect(toList());
+		return bookRepository.findAll(bookSpecification, pageable)
+				.map(book -> new BookDto(book, favouriteBooksIsbns.contains(book.getIsbn())));
+	}
+
+	@Override
+	public List<BookDto> getFavouriteByUsername(String username) {
+		return getUserEntityByUsername(username).getFavouriteBooks()
+				.stream().map(book -> new BookDto(book, true))
+				.collect(toList());
+	}
+
+	@Override
+	public void addToFavourite(String isbn, String username) {
+		UserEntity userEntity = getUserEntityByUsername(username);
+		userEntity.getFavouriteBooks().add(bookRepository.getOne(isbn));
+	}
+
+	@Override
+	public void removeFromFavourite(String isbn, String username) {
+		UserEntity userEntity = getUserEntityByUsername(username);
+		userEntity.getFavouriteBooks().removeIf(book -> book.getIsbn().equals(isbn));
+	}
+
+	private UserEntity getUserEntityByUsername(String username) {
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new ModelNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, username)));
 	}
 
 	@PostConstruct

@@ -3,6 +3,7 @@ package com.skrypnik.javaee.controller;
 import com.skrypnik.javaee.model.Book;
 import com.skrypnik.javaee.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,12 @@ public class BookController {
 	public String indexPage(Model model) {
 		model.addAttribute("book", new Book());
 		return "index";
+	}
+
+	@GetMapping("/favourites")
+	public String favouritesPage(Authentication authentication, Model model) {
+		model.addAttribute("books", bookService.getFavouriteByUsername(authentication.getName()));
+		return "favourites";
 	}
 
 	@GetMapping(value = "/books/{isbn}")
