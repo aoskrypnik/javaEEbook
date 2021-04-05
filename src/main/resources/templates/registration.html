@@ -19,14 +19,24 @@
 <div class="container">
     <form id="saveBook" action="#" th:action="@{/register}" th:object="${user}" method="post">
         <div class="form-group">
-            <label for="inputIsbn">username</label>
-            <input type="text" class="form-control" id="inputIsbn"
+            <label for="inputUsername">username</label>
+            <input type="text"
+                   th:class="${usernameError}? 'form-control is-invalid' : 'form-control'"
+                   id="inputUsername"
                    th:field="*{username}" placeholder="Enter username" required>
+            <div th:if="${usernameError}">
+                <p style="color:red" th:utext="${usernameError}"></p>
+            </div>
         </div>
         <div class="form-group">
-            <label for="inputTitle">password</label>
-            <input type="text" class="form-control" id="inputTitle"
+            <label for="inputPassword">password</label>
+            <input type="text"
+                   th:class="${passwordError}? 'form-control is-invalid' : 'form-control'"
+                   id="inputPassword"
                    th:field="*{password}" placeholder="Enter password" required>
+            <div th:if="${passwordError}">
+                <p style="color:red" th:utext="${passwordError}"></p>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>

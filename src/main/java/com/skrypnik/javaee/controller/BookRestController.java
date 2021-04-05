@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/books")
@@ -32,7 +34,7 @@ public class BookRestController {
 	}
 
 	@PostMapping
-	public Book create(@RequestBody Book book) {
+	public Book create(@RequestBody @Valid Book book) {
 		return bookService.save(book);
 	}
 

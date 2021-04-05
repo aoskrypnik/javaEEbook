@@ -1,5 +1,6 @@
 package com.skrypnik.javaee.service.impl;
 
+import com.skrypnik.javaee.dto.UserDto;
 import com.skrypnik.javaee.exception.ModelAlreadyExistsException;
 import com.skrypnik.javaee.model.UserEntity;
 import com.skrypnik.javaee.repository.UserRepository;
@@ -32,12 +33,15 @@ public class DefaultUserService implements UserService {
 	}
 
 	@Override
-	public void register(UserEntity userEntity) {
-		if (userRepository.findByUsername(userEntity.getUsername()).isEmpty()) {
-			userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+	public void register(UserDto userDto) {
+		if (userRepository.findByUsername(userDto.getUsername()).isEmpty()) {
+			UserEntity userEntity = UserEntity.builder()
+					.username(userDto.getUsername())
+					.password(passwordEncoder.encode(userDto.getPassword()))
+					.build();
 			userRepository.save(userEntity);
 		} else {
-			throw new ModelAlreadyExistsException("User already exists " + userEntity.getUsername());
+			throw new ModelAlreadyExistsException("User already exists " + userDto.getUsername());
 		}
 	}
 

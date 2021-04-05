@@ -87,10 +87,10 @@ public class DefaultBookService implements BookService {
 
 	@PostConstruct
 	private void initDataBase() {
-		bookRepository.save(new Book("1234567899999", "Chorna rada", "Panteleymon Kulish"));
-		bookRepository.save(new Book("1234567888888", "Zapovit", "Taras Shevchenko"));
-		bookRepository.save(new Book("1234567777777", "Haydamaky", "Taras Shevchenko"));
-		bookRepository.save(new Book("1234567666666", "Hiba revut voly", "Panas Myrniy"));
-		bookRepository.save(new Book("1234565555555", "Losiva pisnya", "Lesia Ukrainka"));
+		bookRepository.save(new Book("978-1-891830-85-3", "Chorna rada", "Panteleymon Kulish"));
+		bookRepository.save(new Book("978-1-60309-265-4", "Zapovit", "Taras Shevchenko"));
+		bookRepository.save(new Book("978-1-60309-077-3", "Haydamaky", "Taras Shevchenko"));
+		bookRepository.save(new Book("978-1-60309-369-9", "Hiba revut voly", "Panas Myrniy"));
+		bookRepository.save(new Book("978-1-60309-026-1", "Losiva pisnya", "Lesia Ukrainka"));
 	}
 }

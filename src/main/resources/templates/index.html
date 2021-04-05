@@ -42,20 +42,21 @@
                     title: $(this).find('[name=title]').val(),
                     author: $(this).find('[name=author]').val()
                 }),
-                success: function () {
-                    let books = $('#books');
-                    books.empty();
+                success: function (xhr) {
                     $('#inputIsbn').val('');
                     $('#inputTitle').val('');
                     $('#inputAuthor').val('');
-                    $.ajax({
-                        type: 'GET',
-                        url: '/api/books?size=1000', //hack for fetching all books (assuming that we have < 1000 in db)
-                        success: function (response) {
-                            response.content.forEach(book => appendTableRow(book));
-                        }
-                    });
+                    let books = $('#books');
+                    books.append(appendTableRow(xhr))
+                    $('#isbnError').html('')
+                    $('#titleError').html('')
+                    $('#authorError').html('')
                 },
+                error: function (xhr) {
+                    for (const [key, value] of Object.entries(xhr.responseJSON)) {
+                        $(`#${key}`).html(`<p style="color:red">${value}</p>`)
+                    }
+                }
             });
         });
     })
@@ -102,8 +103,8 @@
             '<td>' + book.author + '</td>';
         const id = "btn".concat(book.isbn)
         let ending = book.liked
-            ? '<td><div  id="' + id + '"><button onclick="change(' + book.isbn + ',' + book.liked + ')"><i class="fas fa-heart"></i></button></div></td></tr>'
-            : '<td><div  id="' + id + '"><button onclick="change(' + book.isbn + ',' + book.liked + ')"><i class="far fa-heart"></i></button></div></td></tr>'
+            ? '<td><div  id="' + id + '"><button onclick="change(\'' + book.isbn + '\',' + book.liked + ')"><i class="fas fa-heart"></i></button></div></td></tr>'
+            : '<td><div  id="' + id + '"><button onclick="change(\'' + book.isbn + '\',' + book.liked + ')"><i class="far fa-heart"></i></button></div></td></tr>'
         return row.concat(ending)
     }
 
@@ -143,16 +144,19 @@
                 <label for="inputIsbn">ISBN</label>
                 <input type="text" class="form-control" id="inputIsbn"
                        th:field="*{isbn}" placeholder="Enter isbn" required>
+                <div id="isbnError"></div>
             </div>
             <div class="form-group">
                 <label for="inputTitle">Title</label>
                 <input type="text" class="form-control" id="inputTitle"
                        th:field="*{title}" placeholder="Enter title" required>
+                <div id="titleError"></div>
             </div>
             <div class="form-group">
                 <label for="inputAuthor">Author</label>
                 <input type="text" class="form-control" id="inputAuthor"
                        th:field="*{author}" placeholder="Enter author" required>
+                <div id="authorError"></div>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
